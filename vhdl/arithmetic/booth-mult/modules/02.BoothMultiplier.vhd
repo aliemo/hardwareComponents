@@ -17,13 +17,19 @@ end BoothMultiplier;
 architecture Behavioral of BoothMultiplier is
 
   component counter is
+    generic(
+      size: integer := 4
+    );
     port(	clock : in	std_logic;
           reset : in	std_logic;
           value : out	std_logic_vector);
   end component counter;
   
   component BoothDatapath is
-	port(
+    generic(
+      size: integer := 4
+    );
+    port(
     clock :in  std_logic;
     reset :in std_logic;
     load :in std_logic;
@@ -58,6 +64,7 @@ architecture Behavioral of BoothMultiplier is
 begin
   
 	datapath:  BoothDatapath
+  generic map(2**COUNTER_SIZE)
 	port map(
 	   clock => clock,
 	   reset => reg_clear,
@@ -68,6 +75,7 @@ begin
 	   P => Result);
 	   
 	counter_unit: counter  
+    generic map(size => COUNTER_SIZE)
     port map(
        clock => clock,
        reset => cnt_clear,
@@ -75,7 +83,7 @@ begin
   
   counter_interrupt <= '1' when (counter_value = ONES) else '0';  
           
-	controller: BoothController  
+	controller: BoothController
        port map(
           clock => clock,
           reset => clear,

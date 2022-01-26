@@ -3,12 +3,15 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity Regeister is
+	generic (
+		size: integer := 4
+	);
 	port(
-		clock	 :in	std_logic;
+		clock :in	std_logic;
 		enable :in 	std_logic;
-		reset	 :in	std_logic;
-		din	 :in 	std_logic_vector;
-		dout	 :out std_logic_vector);
+		reset :in	std_logic;
+		din	 :in 	std_logic_vector(size-1 downto 0);
+		dout :out std_logic_vector(size-1 downto 0));
 end Regeister;
 
 architecture Behavioral of Regeister is

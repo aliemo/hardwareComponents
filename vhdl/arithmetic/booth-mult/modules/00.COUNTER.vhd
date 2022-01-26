@@ -3,10 +3,13 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
 entity counter is
+  generic( 
+		size : integer:= 4
+	);
 	port(	
     clock : in	std_logic;
 		reset : in	std_logic;
-		value : out	std_logic_vector);
+		value : out	std_logic_vector(size-1 downto 0));
 end counter;
 
 architecture behavioral of counter is

@@ -2,11 +2,14 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity Adder is
+	generic( 
+		size : integer:= 4
+	);
 	port(
-		A		: in  std_logic_vector;
-		B		: in  std_logic_vector;
-		Cin	: in  std_logic;
-		S 		: out std_logic_vector;
+		A		: in  std_logic_vector(size-1 downto 0);
+		B		: in  std_logic_vector(size-1 downto 0);
+		Cin		: in  std_logic;
+		S 		: out std_logic_vector(size-1 downto 0);
 		Cout 	: out std_logic);
 end Adder;
 

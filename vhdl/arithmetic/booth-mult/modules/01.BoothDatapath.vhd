@@ -2,43 +2,55 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity BoothDatapath is
+	generic(
+		size: integer := 4
+	);
 	port(
 		clock :in	std_logic;
 		reset :in std_logic;
 		load :in std_logic;
 		shift :in std_logic;
-		X	: in std_logic_vector;
-		Y	: in std_logic_vector;
-		P	: out std_logic_vector);
+		X	: in std_logic_vector(size-1 downto 0);
+		Y	: in std_logic_vector(size-1 downto 0);
+		P	: out std_logic_vector(2*size-1 downto 0));
 end BoothDatapath;
 
 architecture Behavioral of BoothDatapath is
 
 	component Regeister is
+		generic (
+			size: integer := 4
+		);
 		port(
-			clock	 :in	std_logic;
+			clock :in	std_logic;
 			enable :in 	std_logic;
-			reset	 :in	std_logic;
-			din	 :in 	std_logic_vector;
-			dout	 :out std_logic_vector);
+			reset :in	std_logic;
+			din	 :in 	std_logic_vector(size-1 downto 0);
+			dout :out std_logic_vector(size-1 downto 0));
 	end component;
 
 	component LeftShiftReg is
-			port(
-				clock	:in	std_logic;
-				enable :in 	std_logic;
-				shift	:in	std_logic;
-				din	 :in 	std_logic_vector;
-				dout :out std_logic_vector);
+		generic( 
+			size : integer:= 4
+		);
+		port(
+			clock	 :in	std_logic;
+			enable :in 	std_logic;
+			shift	 :in	std_logic;
+			din	 :in 	std_logic_vector(size-1 downto 0);
+			dout	 :out std_logic_vector(size-1 downto 0));
 	end component;
 	
 	component RightShiftReg is
-	port(
-			clock	: in std_logic;
-			enable : in std_logic;
-			shift	: in std_logic;
-			din	: in std_logic_vector;
-			dout : out std_logic_vector(1 downto 0));
+		generic(
+			size : integer := 4
+		);
+		port(
+			clock	 :in	std_logic;
+			enable :in 	std_logic;
+			shift	 :in	std_logic;
+			din	 :in 	std_logic_vector(size-1 downto 0);
+			dout	 :out std_logic_vector(1 downto 0));
 	end component;
 	component BoothEncoder is
 		port(
@@ -50,17 +62,23 @@ architecture Behavioral of BoothDatapath is
 	end component;
 
 	component Alu is
+		generic( 
+			size : integer:= 4
+		);
 		port(
-			A	: in  std_logic_vector;
-			B	: in  std_logic_vector;
+			A	: in  std_logic_vector(size-1 downto 0);
+			B	: in  std_logic_vector(size-1 downto 0);
 			op	: in  std_logic;
-			S 	: out std_logic_vector);
+			S 	: out std_logic_vector(size-1 downto 0));
 	end component;
 	component Ander is
+		generic( 
+			size : integer:= 4
+		);
 		port(
 			input1 : in	 std_logic;
-			input2 : in  std_logic_vector;
-			result : out std_logic_vector);
+			input2 : in  std_logic_vector(size-1 downto 0);
+			result : out std_logic_vector(size-1 downto 0));
 	end component;
 	signal sign_extended_x,andout,alu_out,p_out,X_reg_dout: std_logic_vector(2*X'length -1 downto 0);
 	signal lessTwoBits : std_logic_vector(1 downto 0);
@@ -78,6 +96,7 @@ begin
       product => product);
     
 	Y_REG		: RightShiftReg 
+	generic map(size => size+1)
 	port map(
     clock => clock,
     enable => load,
@@ -86,6 +105,7 @@ begin
     dout => lessTwoBits);
   
   X_REG : LeftShiftReg
+  generic map(size => 2*size)
   port map(
     clock => clock,
     enable => load,
@@ -94,12 +114,14 @@ begin
     dout => X_reg_dout);
 	
   ANDing : Ander
+  generic map(size => 2*size)
   port map(
     input1 => product,
     input2 => X_reg_dout,
     result => AndOut);
   
   Add_Sub : ALU
+  generic map(size => 2*size)
   port map(
     A => P_out,
     B => AndOut,
@@ -107,6 +129,7 @@ begin
     S => ALU_Out);  
   
   P_REG : Regeister
+  generic map(size => 2*size)
     port map(
       clock => clock,
       enable => shift,
